@@ -1,21 +1,20 @@
-import React from "react";
+import React, { useEffect, useMemo } from "react";
 import { useReducer } from "react";
 
 const formReducer = (state, action) => {
+    console.log(state, "STATE");
     switch(action.type) {
         case "Handle Input Text":
+            if (state.password === state.repeatedPassword && state.password !== ""){
+                return {
+                    ...state,
+                    buttonDisabled: !state.buttonDisabled
+                }
+            }
             return {
                 ...state,
                 [action.field]: action.payload,
             };
-        case "Handle Button Activation":
-            if (state.password === state.repeatedPassword && state.password != "") {
-                return {
-                    ...state,
-                    [state.buttonDisabled]: true
-                }
-            }
-            return {...state}
         default: 
             return state;
     }
@@ -32,16 +31,15 @@ const initialState = {
 
 const SignUpPage = () => {
     const [formState, dispatch] = useReducer(formReducer, initialState);
-    
+
     const handleTextChange = (e) => {
-        console.log(e.target.value);
         dispatch({
             type: "Handle Input Text",
             field: e.target.name,
             payload: e.target.value,
         });
     }
-
+    
     const handleSignUp = () => {
 
     }
@@ -50,7 +48,7 @@ const SignUpPage = () => {
         <>
         <h1>Sign Up</h1>
         <label htmlFor="username">Username</label>
-        <input type="text" name="username" value={formState.userName} onChange={handleTextChange} id="username"/>
+        <input type="text" name="userName" value={formState.userName} onChange={handleTextChange} id="username"/>
 
         <label htmlFor="email">E-mail</label>
         <input type="text" name="email" value={formState.email} onChange={handleTextChange} id="email"/>
