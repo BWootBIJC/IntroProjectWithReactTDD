@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 @layer base {
-  html{
+  html {
     @apply text-slate-800;
   }
   h1 {
@@ -12,39 +12,39 @@
   h2 {
     @apply text-2xl;
   }
-  h3{
+  h3 {
     @apply text-xl;
   }
-  h4{
+  h4 {
     @apply text-lg;
   }
-  h5{
+  h5 {
     @apply text-base;
   }
-  h6{
+  h6 {
     @apply text-sm;
   }
-  p{
+  p {
     @apply text-base;
   }
   input {
     @apply border-gray-400 border-2 rounded-sm;
   }
-  li{
+  li {
     padding-left: 3rem;
   }
-  ul{
+  ul {
     @apply list-inside;
     list-style-type: circle;
   }
-  ol{
+  ol {
     list-style-position: inside;
     list-style-type: number;
   }
-  button{
-    @apply p-1 rounded-sm;
+  button {
+    @apply p-1 rounded-md;
   }
   .btn-primary {
-    @apply bg-blue-600 text-white hover:bg-blue-400 disabled:bg-blue-400 disabled:cursor-not-allowed;
+    @apply ml-3 p-2 bg-blue-700 text-white hover:bg-blue-400 disabled:bg-blue-400 disabled:cursor-not-allowed;
   }
 }
