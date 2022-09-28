@@ -1,6 +1,7 @@
 import SignUpPage from "./SignUpPage";
 import {render, screen} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import axios from "axios";
 
 describe("Signup page", () => {
     describe('Layout', () => {
@@ -63,6 +64,31 @@ describe("Signup page", () => {
             userEvent.type(passwordInput, "P4ssword");
             userEvent.type(passwordRepeatInput, "P4ssword");
             expect(button).toBeEnabled();
+        });
+        it("sends username, email and password to backend after clicking the button", () => {
+            render(<SignUpPage/>);
+            const userNameInput = screen.getByLabelText("Username");
+            const emailInput = screen.getByLabelText("E-mail");
+            const passwordInput = screen.getByLabelText("Password");
+            const passwordRepeatInput = screen.getByLabelText("Repeat Password");
+            const button = screen.queryByRole("button", { name: "Sign Up" });
+            userEvent.type(userNameInput, "user1");
+            userEvent.type(emailInput, "user1@gmail.com");
+            userEvent.type(passwordInput, "P4ssword");
+            userEvent.type(passwordRepeatInput, "P4ssword");
+
+            const mockFn = jest.fn();
+            axios.post = mockFn;
+
+            //For Datably, this should instead test, "Is the right service method called?"
+            userEvent.click(button);
+            const firstCallOfMockFunction = mockFn.mock.calls[0];
+            const body = firstCallOfMockFunction[1];
+            expect(body).toEqual({
+                userName: 'user1',
+                email: 'user1@gmail.com',
+                password: 'P4ssword'
+            });
         });
     });
 })
