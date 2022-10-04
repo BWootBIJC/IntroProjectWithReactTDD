@@ -1,7 +1,8 @@
 import SignUpPage from "./SignUpPage";
 import {render, screen} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import axios from "axios";
+import { setupServer} from "msw/node";
+import { rest } from "msw";
 
 describe("Signup page", () => {
     describe('Layout', () => {
@@ -65,7 +66,15 @@ describe("Signup page", () => {
             userEvent.type(passwordRepeatInput, "P4ssword");
             expect(button).toBeEnabled();
         });
-        it("sends username, email and password to backend after clicking the button", () => {
+        it("sends username, email and password to backend after clicking the button", async () => {
+            let requestBody;
+            const server = setupServer(
+                rest.post("/api/1.0/users", (req, res, ctx) => {
+                    requestBody = req.body
+                    return res(ctx.status(200));
+                })
+            );
+            server.listen();
             render(<SignUpPage/>);
             const userNameInput = screen.getByLabelText("Username");
             const emailInput = screen.getByLabelText("E-mail");
@@ -77,13 +86,14 @@ describe("Signup page", () => {
             userEvent.type(passwordInput, "P4ssword");
             userEvent.type(passwordRepeatInput, "P4ssword");
 
-            const mockFn = jest.fn();
-            axios.post = mockFn;
+
+            await new Promise(resolve => setTimeout(resolve, 500));
+        
 
             //For Datably, this should instead test, "Is the right service method called?"
             userEvent.click(button);
             const firstCallOfMockFunction = mockFn.mock.calls[0];
-            const body = firstCallOfMockFunction[1];
+            const body = JSON.parse(firstCallOfMockFunction[1].body);
             expect(body).toEqual({
                 userName: 'user1',
                 email: 'user1@gmail.com',
