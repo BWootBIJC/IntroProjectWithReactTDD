@@ -92,9 +92,7 @@ describe("Signup page", () => {
 
             //For Datably, this should instead test, "Is the right service method called?"
             userEvent.click(button);
-            const firstCallOfMockFunction = mockFn.mock.calls[0];
-            const body = JSON.parse(firstCallOfMockFunction[1].body);
-            expect(body).toEqual({
+            expect(requestBody).toEqual({
                 userName: 'user1',
                 email: 'user1@gmail.com',
                 password: 'P4ssword'
