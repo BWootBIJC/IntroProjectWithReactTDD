@@ -96,5 +96,33 @@ describe("Signup page", () => {
                 password: 'P4ssword'
             });
         });
+        it ("Disables button when there is an ongoing api call", async () => {
+            let counter = 0;
+            let requestBody;
+            const server = setupServer(
+                rest.post("/api/1.0/users", (req, res, ctx) => {
+                    requestBody = req.body;
+                    counter += 1;
+                    return res(ctx.status(200));
+                })
+            );
+            server.listen();
+            render(<SignUpPage/>);
+            const userNameInput = screen.getByLabelText("Username");
+            const emailInput = screen.getByLabelText("E-mail");
+            const passwordInput = screen.getByLabelText("Password");
+            const passwordRepeatInput = screen.getByLabelText("Repeat Password");
+            const button = screen.queryByRole("button", { name: "Sign Up" });
+            userEvent.type(userNameInput, "user1");
+            userEvent.type(emailInput, "user1@gmail.com");
+            userEvent.type(passwordInput, "P4ssword");
+            userEvent.type(passwordRepeatInput, "P4ssword");
+            userEvent.click(button);
+            userEvent.click(button);
+
+            await new Promise(resolve => setTimeout(resolve, 500));
+        
+            expect(counter).toBe(1);
+        })
     });
 })
