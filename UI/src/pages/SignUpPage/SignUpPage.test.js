@@ -1,7 +1,7 @@
 import SignUpPage from "./SignUpPage";
 import {render, screen} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { setupServer} from "msw/node";
+import { setupServer } from "msw/node";
 import { rest } from "msw";
 
 describe("Signup page", () => {
@@ -85,13 +85,11 @@ describe("Signup page", () => {
             userEvent.type(emailInput, "user1@gmail.com");
             userEvent.type(passwordInput, "P4ssword");
             userEvent.type(passwordRepeatInput, "P4ssword");
-
+            userEvent.click(button);
 
             await new Promise(resolve => setTimeout(resolve, 500));
         
-
             //For Datably, this should instead test, "Is the right service method called?"
-            userEvent.click(button);
             expect(requestBody).toEqual({
                 userName: 'user1',
                 email: 'user1@gmail.com',

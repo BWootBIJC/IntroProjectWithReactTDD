@@ -44,7 +44,18 @@
   button {
     @apply p-1 rounded-md;
   }
+}
+
+@layer components {
+  .label {
+    @apply sr-only;
+  }
+
+  .input {
+    @apply relative appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm;
+  }
+
   .btn-primary {
-    @apply ml-3 p-2 bg-blue-700 text-white hover:bg-blue-400 disabled:bg-blue-400 disabled:cursor-not-allowed;
+    @apply ml-3 p-2 bg-slate-900 text-white hover:bg-slate-700 border-2 border-stone-900 transition-all duration-300 disabled:bg-slate-700 disabled:cursor-not-allowed;
   }
 }
