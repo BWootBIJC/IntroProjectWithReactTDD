@@ -9,7 +9,7 @@ const FileService = require('../file/FileService');
 
 router.post(
   '/api/1.0/users',
-  check('username')
+  check('userName')
     .notEmpty()
     .withMessage('username_null')
     .bail()
@@ -79,7 +79,7 @@ router.get('/api/1.0/users/:id', async (req, res, next) => {
 
 router.put(
   '/api/1.0/users/:id',
-  check('username')
+  check('userName')
     .notEmpty()
     .withMessage('username_null')
     .bail()

@@ -11,9 +11,9 @@ const TokenService = require('../auth/TokenService');
 const FileService = require('../file/FileService');
 
 const save = async (body) => {
-  const { username, email, password } = body;
+  const { userName, email, password } = body;
   const hash = await bcrypt.hash(password, 10);
-  const user = { username, email, password: hash, activationToken: randomString(16) };
+  const user = { userName, email, password: hash, activationToken: randomString(16) };
   const transaction = await sequelize.transaction();
   await User.create(user, { transaction });
   try {
@@ -47,7 +47,7 @@ const getUsers = async (page, size, authenticatedUser) => {
         [Sequelize.Op.not]: authenticatedUser ? authenticatedUser.id : 0,
       },
     },
-    attributes: ['id', 'username', 'email', 'image'],
+    attributes: ['id', 'userName', 'email', 'image'],
     limit: size,
     offset: page * size,
   });
@@ -65,7 +65,7 @@ const getUser = async (id) => {
       id: id,
       inactive: false,
     },
-    attributes: ['id', 'username', 'email', 'image'],
+    attributes: ['id', 'userName', 'email', 'image'],
   });
   if (!user) {
     throw new NotFoundException('user_not_found');
@@ -75,7 +75,7 @@ const getUser = async (id) => {
 
 const updateUser = async (id, updatedBody) => {
   const user = await User.findOne({ where: { id: id } });
-  user.username = updatedBody.username;
+  user.userName = updatedBody.userName;
   if (updatedBody.image) {
     if (user.image) {
       await FileService.deleteProfileImage(user.image);
@@ -85,7 +85,7 @@ const updateUser = async (id, updatedBody) => {
   await user.save();
   return {
     id: id,
-    username: user.username,
+    userName: user.userName,
     email: user.email,
     image: user.image,
   };
