@@ -1,33 +1,35 @@
-const useSignUp = () => {
+import { useReducer, useEffect } from "react";
+import { formReducer, initialState } from "./SignUpReducer";
+
+export const useSignUp = () => {
     const [state, dispatch] = useReducer(formReducer, initialState);
     const url = "/api/1.0/users";
 
     const handleSubmit = (event) => {
       event.preventDefault();
+
+    };
+
+    useEffect(() => {
+      const controller = new AbortController();
       const body = {
         userName: state.userName,
         email: state.email,
         password: state.password
       }
 
+      fetch("/api/1.0/users", { signal: controller.signal }, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
 
-      useEffect(() => {
-        const controller = new AbortController();
-
-        fetch("/api/1.0/users", { signal: controller.signal }, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(body)
-        });
-  
-        return () => {
-          controller.abort();
-        }
-      }, [url])
-
-    };
+      return () => {
+        controller.abort();
+      }
+    }, [url])
   
     const handleTextChange = (e) => {
       dispatch({
@@ -37,5 +39,9 @@ const useSignUp = () => {
       });
     }
 
-    return {};
+    return {
+      handleSubmit,
+      handleTextChange,
+      state
+    };
 };
