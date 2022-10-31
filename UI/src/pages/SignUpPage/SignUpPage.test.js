@@ -53,17 +53,22 @@ describe("Signup page", () => {
         });
     });
     describe("Interactions", () => {
-        it("enables the button when password repeat fields have same value and when all fields are not empty", () => {
+        let button;
+        const setup = () => {
             render(<SignUpPage/>);
-            const userNameInput = screen.getByLabelText("Username");
-            const emailInput = screen.getByLabelText("E-mail");
-            const passwordInput = screen.getByLabelText("Password");
-            const passwordRepeatInput = screen.getByLabelText("Repeat Password");
-            const button = screen.queryByRole("button", { name: "Sign Up" });
-            userEvent.type(userNameInput, "test");
-            userEvent.type(emailInput, "test");
-            userEvent.type(passwordInput, "P4ssword");
-            userEvent.type(passwordRepeatInput, "P4ssword");
+            const usernameInput = screen.getByLabelText('Username');
+            const emailInput = screen.getByLabelText('Email');
+            const passwordInput = screen.getByLabelText('Password');
+            const passwordRepeatInput = screen.getByLabelText('Password Repeat');
+            userEvent.type(usernameInput, 'user1');
+            userEvent.type(emailInput, 'user1@gmail.com');
+            userEvent.type(passwordInput, 'P4ssword');
+            userEvent.type(passwordRepeatInput, 'P4ssword');
+            button = screen.queryByRole('button', { name: 'Sign up' });
+        }
+
+        it("enables the button when password repeat fields have same value and when all fields are not empty", () => {
+            setup();
             expect(button).toBeEnabled();
         });
         it("sends username, email and password to backend after clicking the button", async () => {
@@ -75,16 +80,7 @@ describe("Signup page", () => {
                 })
             );
             server.listen();
-            render(<SignUpPage/>);
-            const userNameInput = screen.getByLabelText("Username");
-            const emailInput = screen.getByLabelText("E-mail");
-            const passwordInput = screen.getByLabelText("Password");
-            const passwordRepeatInput = screen.getByLabelText("Repeat Password");
-            const button = screen.queryByRole("button", { name: "Sign Up" });
-            userEvent.type(userNameInput, "user1");
-            userEvent.type(emailInput, "user1@gmail.com");
-            userEvent.type(passwordInput, "P4ssword");
-            userEvent.type(passwordRepeatInput, "P4ssword");
+            setup();
             userEvent.click(button);
 
             await new Promise(resolve => setTimeout(resolve, 500));
@@ -107,16 +103,7 @@ describe("Signup page", () => {
                 })
             );
             server.listen();
-            render(<SignUpPage/>);
-            const userNameInput = screen.getByLabelText("Username");
-            const emailInput = screen.getByLabelText("E-mail");
-            const passwordInput = screen.getByLabelText("Password");
-            const passwordRepeatInput = screen.getByLabelText("Repeat Password");
-            const button = screen.queryByRole("button", { name: "Sign Up" });
-            userEvent.type(userNameInput, "user1");
-            userEvent.type(emailInput, "user1@gmail.com");
-            userEvent.type(passwordInput, "P4ssword");
-            userEvent.type(passwordRepeatInput, "P4ssword");
+            setup();
             userEvent.click(button);
             userEvent.click(button);
 
