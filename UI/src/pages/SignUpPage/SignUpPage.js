@@ -1,6 +1,4 @@
 import React, { useEffect } from "react";
-import { useReducer } from "react";
-import { formReducer, initialState } from "./SignUpReducer";
 import {useSignUp} from "./useSignUp"
 
 const SignUpPage = () => {

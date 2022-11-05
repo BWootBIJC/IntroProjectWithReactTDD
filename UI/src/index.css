@@ -56,6 +56,6 @@
   }
 
   .btn-primary {
-    @apply ml-3 p-2 bg-slate-900 text-white hover:bg-slate-700 border-2 border-stone-900 transition-all duration-300 disabled:bg-slate-700 disabled:cursor-not-allowed;
+    @apply ml-3 p-2 bg-blue-500 text-white hover:bg-blue-300 transition-all duration-300 disabled:bg-blue-300 disabled:cursor-not-allowed;
   }
 }

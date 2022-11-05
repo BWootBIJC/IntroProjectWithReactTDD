@@ -26,6 +26,14 @@ export const initialState = {
           ...form,
           buttonDisabled: disabled
         };
+        case "Empty values":
+          return {
+            userName: "",
+            email: "",
+            password: "",
+            repeatedPassword: "",
+            buttonDisabled: true
+          }
       default: 
         return state;
     }

@@ -3,6 +3,7 @@ import {render, screen} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { setupServer } from "msw/node";
 import { rest } from "msw";
+import axios from "axios";
 
 describe("Signup page", () => {
     describe('Layout', () => {
@@ -57,14 +58,14 @@ describe("Signup page", () => {
         const setup = () => {
             render(<SignUpPage/>);
             const usernameInput = screen.getByLabelText('Username');
-            const emailInput = screen.getByLabelText('Email');
+            const emailInput = screen.getByLabelText('E-mail');
             const passwordInput = screen.getByLabelText('Password');
-            const passwordRepeatInput = screen.getByLabelText('Password Repeat');
+            const passwordRepeatInput = screen.getByLabelText('Repeat Password');
             userEvent.type(usernameInput, 'user1');
             userEvent.type(emailInput, 'user1@gmail.com');
             userEvent.type(passwordInput, 'P4ssword');
             userEvent.type(passwordRepeatInput, 'P4ssword');
-            button = screen.queryByRole('button', { name: 'Sign up' });
+            button = screen.queryByRole("button", { name: "Sign Up" });
         }
 
         it("enables the button when password repeat fields have same value and when all fields are not empty", () => {
@@ -81,35 +82,53 @@ describe("Signup page", () => {
             );
             server.listen();
             setup();
+
             userEvent.click(button);
 
-            await new Promise(resolve => setTimeout(resolve, 500));
-        
-            //For Datably, this should instead test, "Is the right service method called?"
+            await new Promise((resolve) => setTimeout(resolve, 300));
+
             expect(requestBody).toEqual({
                 userName: 'user1',
                 email: 'user1@gmail.com',
                 password: 'P4ssword'
             });
         });
-        it ("Disables button when there is an ongoing api call", async () => {
-            let counter = 0;
-            let requestBody;
-            const server = setupServer(
-                rest.post("/api/1.0/users", (req, res, ctx) => {
-                    requestBody = req.body;
-                    counter += 1;
-                    return res(ctx.status(200));
-                })
-            );
-            server.listen();
-            setup();
-            userEvent.click(button);
-            userEvent.click(button);
+        // it ("Disables button when there is an ongoing api call", async () => {
+        //     let counter = 0;
+        //     const server = setupServer(
+        //         rest.post("/api/1.0/users", (req, res, ctx) => {
+        //             counter += 1;
+        //             return res(ctx.status(200));
+        //         })
+        //     );
+        //     server.listen();
+        //     setup();
+        //     userEvent.click(button);
+        //     userEvent.click(button);
 
-            await new Promise(resolve => setTimeout(resolve, 500));
+        //     await new Promise(resolve => setTimeout(resolve, 500));
         
-            expect(counter).toBe(1);
-        })
+        //     expect(counter).toBe(1);
+        // });
+        // it ("Displays spinner while the api request is in progress", async () => {
+        //     let counter = 0;
+        //     let requestBody;
+        //     const server = setupServer(
+        //         rest.post("/api/1.0/users", (req, res, ctx) => {
+        //             requestBody = req.body;
+        //             counter += 1;
+        //             return res(ctx.status(200));
+        //         })
+        //     );
+        //     server.listen();
+        //     setup();
+        //     userEvent.click(button);
+
+
+
+        //     await new Promise(resolve => setTimeout(resolve, 500));
+        
+        //     expect(counter).toBe(1);
+        // });
     });
 })
