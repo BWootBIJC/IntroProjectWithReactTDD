@@ -1,8 +1,33 @@
-import React, { useEffect } from "react";
-import {useSignUp} from "./useSignUp"
+import React from "react";
+import { useReducer } from "react";
+import { formReducer, initialState } from "./SignUpReducer";
 
 const SignUpPage = () => {
-    const { handleSubmit, handleTextChange, state } = useSignUp();
+    const [state, dispatch] = useReducer(formReducer, initialState);
+
+    const handleSubmit = (event) => {
+      event.preventDefault();
+      const body = {
+        userName: state.userName,
+        email: state.email,
+        password: state.password
+      }
+      fetch("/api/1.0/users", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      })
+    };
+  
+    const handleTextChange = (e) => {
+      dispatch({
+        type: "Handle Input Text",
+        field: e.target.name,
+        payload: e.target.value,
+      });
+    }
   
     return (
       <div>
