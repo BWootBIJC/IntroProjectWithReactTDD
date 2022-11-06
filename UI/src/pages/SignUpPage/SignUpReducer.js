@@ -3,7 +3,7 @@ export const initialState = {
     email: "",
     password: "",
     repeatedPassword: "",
-    buttonDisabled: true
+    buttonDisabled: true,
   }
   
   export const formReducer = (state, action) => {

@@ -1,9 +1,10 @@
 import SignUpPage from "./SignUpPage";
-import {render, screen} from "@testing-library/react";
+import {render, screen, waitFor, waitForElementToBeRemoved} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { setupServer } from "msw/node";
-import { rest } from "msw";
+import { rest, restContext } from "msw";
 import axios from "axios";
+import { act } from "react-dom/test-utils";
 
 describe("Signup page", () => {
     describe('Layout', () => {
@@ -61,31 +62,43 @@ describe("Signup page", () => {
             const emailInput = screen.getByLabelText('E-mail');
             const passwordInput = screen.getByLabelText('Password');
             const passwordRepeatInput = screen.getByLabelText('Repeat Password');
-            userEvent.type(usernameInput, 'user1');
-            userEvent.type(emailInput, 'user1@gmail.com');
-            userEvent.type(passwordInput, 'P4ssword');
-            userEvent.type(passwordRepeatInput, 'P4ssword');
+            act(() => {
+                userEvent.type(usernameInput, 'user1');
+                userEvent.type(emailInput, 'user1@gmail.com');
+                userEvent.type(passwordInput, 'P4ssword');
+                userEvent.type(passwordRepeatInput, 'P4ssword');
+            })
             button = screen.queryByRole("button", { name: "Sign Up" });
-        }
+        };
 
-        it("enables the button when password repeat fields have same value and when all fields are not empty", () => {
-            setup();
-            expect(button).toBeEnabled();
-        });
-        it("sends username, email and password to backend after clicking the button", async () => {
-            let requestBody;
+        let requestBody;
             const server = setupServer(
                 rest.post("/api/1.0/users", (req, res, ctx) => {
                     requestBody = req.body
                     return res(ctx.status(200));
                 })
             );
+
+        beforeAll(() => {
             server.listen();
+        });
+        afterAll(() => {
+            server.close();
+        })
+
+
+        it("enables the button when password repeat fields have same value and when all fields are not empty", () => {
+            setup();
+            expect(button).toBeEnabled();
+        });
+        it("sends username, email and password to backend after clicking the button", async () => {
             setup();
 
-            userEvent.click(button);
+            act(() => {
+                userEvent.click(button);
+            })
 
-            await new Promise((resolve) => setTimeout(resolve, 300));
+            await screen.findByText("Please check your email to activate your account")
 
             expect(requestBody).toEqual({
                 userName: 'user1',
@@ -93,42 +106,46 @@ describe("Signup page", () => {
                 password: 'P4ssword'
             });
         });
-        // it ("Disables button when there is an ongoing api call", async () => {
-        //     let counter = 0;
-        //     const server = setupServer(
-        //         rest.post("/api/1.0/users", (req, res, ctx) => {
-        //             counter += 1;
-        //             return res(ctx.status(200));
-        //         })
-        //     );
-        //     server.listen();
-        //     setup();
-        //     userEvent.click(button);
-        //     userEvent.click(button);
+        it ("Disables button after it has been clicked", async () => {
+            setup();
 
-        //     await new Promise(resolve => setTimeout(resolve, 500));
-        
-        //     expect(counter).toBe(1);
-        // });
-        // it ("Displays spinner while the api request is in progress", async () => {
-        //     let counter = 0;
-        //     let requestBody;
-        //     const server = setupServer(
-        //         rest.post("/api/1.0/users", (req, res, ctx) => {
-        //             requestBody = req.body;
-        //             counter += 1;
-        //             return res(ctx.status(200));
-        //         })
-        //     );
-        //     server.listen();
-        //     setup();
-        //     userEvent.click(button);
+            act(() => {
+                userEvent.click(button);
+            });
+            button = screen.getByTestId("button");
 
-
-
-        //     await new Promise(resolve => setTimeout(resolve, 500));
-        
-        //     expect(counter).toBe(1);
-        // });
+            expect(button).toBeDisabled();
+        });
+        it("Displays a loading indicator while api call is in progress", () => {
+            setup();
+            act(() => {
+                userEvent.click(button);
+            })
+            const spinner = screen.getByRole('loader');
+            expect(spinner).toBeInTheDocument();
+        });
+        it("Does not display the loading spinner when there is no api request", () => {
+            setup();
+            const spinner = screen.queryByRole('loader');
+            expect(spinner).not.toBeInTheDocument();
+        });
+        it("Displays account activation notification after successful sign up request", async () => {
+            setup();
+            const message = "Please check your email to activate your account";
+            expect(screen.queryByText(message)).not.toBeInTheDocument()
+            act(() => {
+                userEvent.click(button);
+            })
+            const text = await screen.findByText(message);
+            expect(text).toBeInTheDocument();
+        });
+        it("Hides sign up form after successful sign up request", async () => {
+            setup();
+            const form = screen.getByTestId("form-sign-up");
+            userEvent.click(button);
+            await waitFor(() => {
+                expect(form).not.toBeInTheDocument();
+            });
+        });
     });
 })
