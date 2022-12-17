@@ -17,11 +17,14 @@ export const initialState = {
           [action.field]: action.payload,
         };
         
-        // compute disabled with new values of fields
-        const disabled =
-          !Object.values(form).every(Boolean) // are all values filled
-          || form.password !== form.repeatedPassword; // are the password identical
-        
+        // // compute disabled with new values of fields
+        // const disabled =
+        //   !Object.values(form).every(Boolean) // are all values filled
+        //   || form.password !== form.repeatedPassword; // are the password identical
+
+        const disabled = form.password !== form.repeatedPassword; // are the password identical
+          
+          
         return {
           ...form,
           buttonDisabled: disabled
