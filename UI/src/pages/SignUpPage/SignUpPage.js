@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useReducer} from "react";
 import {formReducer, initialState} from "./SignUpReducer";
 import LoadingSpinner from "../../components/LoadingSpinner";
@@ -8,7 +8,7 @@ const SignUpPage = () => {
     const [state, dispatch] = useReducer(formReducer, initialState);
     const [apiProgress, setApiProgress] = useState(false);
     const [signUpSuccess, setSignUpSuccess] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
+    const [errorMessage, setErrorMessage] = useState({});
     const [isError, setIsError] = useState(false);
 
     const handleSubmit = async (event) => {
@@ -30,13 +30,12 @@ const SignUpPage = () => {
             .then((data) => {
                 console.log(data, "RESPONSE");
                 setSignUpSuccess(prevState => true);
-                return data;
+                setIsError(false);
             })
             .catch((e) => {
                 setIsError(prevState => true);
-                console.log(e, "EEE");
-                setErrorMessage(e.message);
-                return e;
+                setErrorMessage(e);
+                setApiProgress(prevState => false);
             });
     };
 
@@ -57,12 +56,26 @@ const SignUpPage = () => {
                         <label className="label" htmlFor="username">Username</label>
                         <input className="input" type="text" name="userName" placeholder="User Name"
                                value={state.userName} onChange={handleTextChange} id="username"/>
+                        {
+                            isError &&
+                            <p className="p-3 inline-block mt-5 rounded-lg bg-red-200 text-red-700">{errorMessage.validationErrors?.userName}</p>
+                        }
                         <label className="label" htmlFor="email">E-mail</label>
                         <input className="input" type="text" placeholder="Email" name="email" value={state.email}
                                onChange={handleTextChange} id="email"/>
+                        {
+                            isError &&
+                            <p className="p-3 inline-block mt-5 rounded-lg bg-red-200 text-red-700">{errorMessage.validationErrors?.email}</p>
+                        }
+
                         <label className="label" htmlFor="password">Password</label>
                         <input className="input" name="password" placeholder="Password" value={state.password}
                                onChange={handleTextChange} type="password" id="password"/>
+                        {
+                            isError &&
+                            <p className="p-3 inline-block mt-5 rounded-lg bg-red-200 text-red-700">{errorMessage.validationErrors?.password}</p>
+                        }
+
                         <label className="label" htmlFor="repeatedPassword">Repeat Password</label>
                         <input className="input" placeholder="Repeat Password" name="repeatedPassword"
                                value={state.repeatedPassword} onChange={handleTextChange} type="password"
@@ -82,10 +95,10 @@ const SignUpPage = () => {
                 </p>
             }
 
-            {
-                isError &&
-                <p className="p-3 inline-block mt-5 rounded-lg bg-red-200 text-red-700">{errorMessage}</p>
-            }
+            {/*{*/}
+            {/*    isError &&*/}
+            {/*    <p className="p-3 inline-block mt-5 rounded-lg bg-red-200 text-red-700">{errorMessage.validationErrors.userName}</p>*/}
+            {/*}*/}
         </div>
     )
 };
