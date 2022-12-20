@@ -24,7 +24,7 @@ const SignUpPage = () => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(body)
+            body: body ? JSON.stringify(body) : ""
         })
             .then(apiResponseHandler)
             .then((data) => {
@@ -56,30 +56,20 @@ const SignUpPage = () => {
                         <label className="label" htmlFor="username">Username</label>
                         <input className="input" type="text" name="userName" placeholder="User Name"
                                value={state.userName} onChange={handleTextChange} id="username"/>
-                        {
-                            isError &&
-                            <p className="p-3 inline-block mt-5 rounded-lg bg-red-200 text-red-700">{errorMessage.validationErrors?.userName}</p>
-                        }
                         <label className="label" htmlFor="email">E-mail</label>
                         <input className="input" type="text" placeholder="Email" name="email" value={state.email}
                                onChange={handleTextChange} id="email"/>
-                        {
-                            isError &&
-                            <p className="p-3 inline-block mt-5 rounded-lg bg-red-200 text-red-700">{errorMessage.validationErrors?.email}</p>
-                        }
-
                         <label className="label" htmlFor="password">Password</label>
                         <input className="input" name="password" placeholder="Password" value={state.password}
                                onChange={handleTextChange} type="password" id="password"/>
-                        {
-                            isError &&
-                            <p className="p-3 inline-block mt-5 rounded-lg bg-red-200 text-red-700">{errorMessage.validationErrors?.password}</p>
-                        }
-
                         <label className="label" htmlFor="repeatedPassword">Repeat Password</label>
                         <input className="input" placeholder="Repeat Password" name="repeatedPassword"
                                value={state.repeatedPassword} onChange={handleTextChange} type="password"
                                id="repeatedPassword"/>
+                        {
+                            errorMessage.validationErrors &&
+                            <p className="p-3 inline-block mt-5 rounded-lg bg-red-200 text-red-700">{Object.values(errorMessage.validationErrors)}</p>
+                        }
                         {apiProgress && <button className="btn-primary" data-testid="button" onClick={handleSubmit}
                                                 disabled={state.buttonDisabled || apiProgress}><LoadingSpinner/>Sign Up
                         </button>}
@@ -90,9 +80,7 @@ const SignUpPage = () => {
             }
             {
                 signUpSuccess &&
-                <p className="p-3 inline-block mt-5 rounded-lg bg-green-200 text-green-700">
-                    Please check your email to activate your account
-                </p>
+                <p className="p-3 inline-block mt-5 rounded-lg bg-green-200 text-green-700">Please check your email to activate your account</p>
             }
 
             {/*{*/}

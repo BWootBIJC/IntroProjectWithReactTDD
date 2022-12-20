@@ -62,19 +62,18 @@ describe("Signup page", () => {
             const emailInput = screen.getByPlaceholderText('Email');
             const passwordInput = screen.getByPlaceholderText('Password');
             const passwordRepeatInput = screen.getByPlaceholderText('Repeat Password');
-            act(() => {
                 userEvent.type(usernameInput, 'user1');
                 userEvent.type(emailInput, 'user1@gmail.com');
                 userEvent.type(passwordInput, 'P4ssword');
                 userEvent.type(passwordRepeatInput, 'P4ssword');
-            })
+            
             button = screen.queryByRole("button", { name: "Sign Up" });
         };
 
         let requestBody;
             const server = setupServer(
                 rest.post("/api/1.0/users", (req, res, ctx) => {
-                    requestBody = req.body
+                    requestBody = ctx.body
                     return res(ctx.status(200));
                 })
             );
@@ -96,10 +95,12 @@ describe("Signup page", () => {
 
             act(() => {
                 userEvent.click(button);
-            })
+            });
+            
+            screen.findByText("Please check your email to activate your account");
 
-            //await screen.findByText("Please check your email to activate your account");
-
+            console.debug(requestBody, "REQUEST BODYYYYYY");
+            
             expect(requestBody).toEqual({
                 userName: 'user1',
                 email: 'user1@gmail.com',
